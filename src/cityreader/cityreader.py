@@ -1,6 +1,11 @@
 # Create a class to hold a city location. Call the class "City". It should have
 # fields for name, lat and lon (representing latitude and longitude).
 
+class City:
+  def __init__(self, name, lat, lon):
+    self.name = name
+    self.lat = lat
+    self.lon = lon
 
 # We have a collection of US cities with population over 750,000 stored in the
 # file "cities.csv". (CSV stands for "comma-separated values".)
@@ -16,11 +21,16 @@
 # should not be loaded into a City object.
 cities = []
 
+import csv
 def cityreader(cities=[]):
+  with open('./src/cityreader/cities.csv') as csvfile:
+    reader = csv.reader(csvfile)
+    reader.__next__()
+    for row in reader:
+      cities.append(City(row[0], float(row[3]), float(row[4])))
   # TODO Implement the functionality to read from the 'cities.csv' file
   # For each city record, create a new City instance and add it to the 
   # `cities` list
-    
     return cities
 
 cityreader(cities)
@@ -59,13 +69,15 @@ for c in cities:
 # Salt Lake City: (40.7774,-111.9301)
 
 # TODO Get latitude and longitude values from the user
-
 def cityreader_stretch(lat1, lon1, lat2, lon2, cities=[]):
   # within will hold the cities that fall within the specified region
   within = []
-
-  # TODO Ensure that the lat and lon valuse are all floats
-  # Go through each city and check to see if it falls within 
-  # the specified coordinates.
-
+  for city in cities:
+    if (not (isinstance(city.lat, float) and isinstance(city.lon, float))):
+      #   Typechecking is generally not recommended in Python - it is seen as best to "ask for forgiveness" rather than "ask for permission",
+      #   by error handling any TypeErrors that may come up.  However, ensuring coordinates are floats is in the spec, and comparing with inequality
+      #   operators will not throw a TypeError if the value is an int or a str, so we check explicitly with isinstance.
+      return 'Error: Coordinates must be of type float.'
+    if city.lat >= min(lat1, lat2) and city.lat <= max(lat1, lat2) and city.lon >= min(lon1, lon2) and city.lon <= max(lon1, lon2):
+      within.append(city)
   return within
